@@ -1,0 +1,8 @@
+(library
+ (name laligabet_lib)
+ (libraries core curl file_path ocamlgraph lambdasoup uri)
+ (preprocess
+  (pps ppx_jane))
+ (inline_tests
+  (deps
+   (source_tree ../resources))))

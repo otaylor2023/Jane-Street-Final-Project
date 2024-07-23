@@ -1,0 +1,3 @@
+(executables
+ (names laligabet)
+ (libraries core core_unix.command_unix wiki_game_lib))
