@@ -17,8 +17,8 @@ end
 module Bets = struct
   type t =
     | Home of { odds : float }
-    | Away of { odds : float }
     | Tie of { odds : float }
+    | Away of { odds : float }
 end
 
 module Bet_properties = struct

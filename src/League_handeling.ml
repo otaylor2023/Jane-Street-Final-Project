@@ -7,7 +7,7 @@ module Game_result = struct
     | Away
 end
 
-module Teams = struct
+module Team = struct
   type t =
     { home_wins : int
     ; home_ties : int
@@ -38,12 +38,12 @@ module Teams = struct
 end
 
 module League = struct
-  type t = Teams.t String.Table.t
+  type t = Team.t String.Table.t
 
   let of_teams team_mapping : t =
     let team_mapping =
       List.map team_mapping ~f:(fun team_name ->
-        team_name, Teams.initialize_team)
+        team_name, Team.initialize_team)
     in
     Hashtbl.of_alist_exn (module String) team_mapping
   ;;
