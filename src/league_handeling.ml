@@ -5,6 +5,9 @@ module Game_result = struct
     | Home
     | Tie
     | Away
+  [@@deriving sexp, equal]
+
+  let to_string t = sexp_of_t t |> Sexp.to_string
 end
 
 module Team = struct

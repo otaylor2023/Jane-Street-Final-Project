@@ -1,3 +1,15 @@
 (executables
- (names laligabet)
- (libraries core core_unix.command_unix wiki_game_lib))
+ (names laligabet matchday_example)
+ (preprocess
+  (pps ppx_jane))
+ (libraries
+  core
+  core_unix.command_unix
+  laligabet_lib
+  async_interactive
+  async
+  curl
+  file_path
+  ocamlgraph
+  lambdasoup
+  uri))

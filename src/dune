@@ -1,6 +1,15 @@
 (library
  (name laligabet_lib)
- (libraries core curl file_path ocamlgraph lambdasoup uri)
+ (libraries
+  async_interactive
+  async
+  core
+  curl
+  file_path
+  ocamlgraph
+  lambdasoup
+  uri
+  core_unix.command_unix)
  (preprocess
   (pps ppx_jane))
  (inline_tests
