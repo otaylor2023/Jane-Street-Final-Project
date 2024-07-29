@@ -9,7 +9,8 @@
   ocamlgraph
   lambdasoup
   uri
-  core_unix.command_unix)
+  core_unix.command_unix
+  csv)
  (preprocess
   (pps ppx_jane))
  (inline_tests

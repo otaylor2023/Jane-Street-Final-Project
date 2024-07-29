@@ -15,3 +15,10 @@ let command_matchday_example =
     (let%map_open.Command () = return () in
      fun () -> Interactive.run_example ())
 ;;
+
+let command_matchday_test =
+  Command.async
+    ~summary:"MATCHDAY"
+    (let%map_open.Command () = return () in
+     fun () -> Interactive.run_matchday ())
+;;

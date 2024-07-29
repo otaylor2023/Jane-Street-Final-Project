@@ -34,6 +34,7 @@ module Bet_properties = struct
     ; variance : float
     ; variance_cost : float
     ; risk : float
+    ; odds : float
     }
   [@@deriving sexp, equal]
 
@@ -114,7 +115,15 @@ let cost_of_variance
   ev *. (1. -. s)
 ;;
 
-let risk_of_bet odds = odds /. (1. +. odds)
+(* VERY SUBJECT TO CHANGE NEED TO FIGUERE THIS OUT *)
+let bet_risk_score (bet_type : Bets.t) (game_d : Game_distribution.t) =
+  let variance = bet_variance bet_type game_d in
+  let ev = bet_expected_value bet_type game_d in
+  let odds = get_odds bet_type in
+  Float.sqrt
+    (Float.( / ) (variance *. 15.) (Float.( ** ) (1. +. ev) 5.) *. odds)
+  -. 1.
+;;
 
 let create_bet_properties
   bankroll
@@ -122,18 +131,29 @@ let create_bet_properties
   (game_d : Game_distribution.t)
   : Bet_properties.t
   =
-  let odds = get_odds bet_type in
   { expected_value = bet_expected_value bet_type game_d
   ; variance = bet_variance bet_type game_d
   ; variance_cost = cost_of_variance ~bankroll bet_type game_d
-  ; risk = risk_of_bet odds
+  ; risk = bet_risk_score bet_type game_d
+  ; odds = get_odds bet_type
   }
 ;;
 
-(* VERY SUBJECT TO CHANGE NEED TO FIGUERE THIS OUT *)
-let _bet_risk_score (bet_properties : Bet_properties.t) =
-  (bet_properties.variance *. 100.)
-  +. ((1. -. bet_properties.variance_cost) *. 200.)
-  +. (bet_properties.risk *. 100.)
-  -. (bet_properties.expected_value *. 100.)
+let willing_to_bet risk_tolerance (match_bet : Bet_properties.t) =
+  Float.( > ) (risk_tolerance *. 1.5) match_bet.risk
+;;
+
+let decide_bet_amount
+  ~bankroll
+  ~risk_tolerance
+  ~(match_bet : Bet_properties.t)
+  =
+  if willing_to_bet risk_tolerance match_bet
+  then (
+    let unit = Float.( / ) bankroll 66.6 in
+    let desired_return =
+      (2. *. unit) +. (Float.( / ) bankroll 1000. *. risk_tolerance)
+    in
+    Some ((desired_return -. (match_bet.risk /. 2000.)) /. match_bet.odds))
+  else None
 ;;

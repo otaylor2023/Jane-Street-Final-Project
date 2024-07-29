@@ -10,4 +10,7 @@ val output_bets_and_information
   :  t
   -> bankroll:float
   -> unwanted_teams:string list
+  -> risk_tolerance:float
   -> unit
+
+val of_csv_exn : string list list -> t

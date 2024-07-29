@@ -115,9 +115,25 @@ let run_example () =
       ~f:(fun input -> Ok input)
       "Enter your second unwanted team"
   in
+  let%bind risk_tolerance =
+    Async_interactive.ask_dispatch_gen
+      ~f:(fun input -> Ok input)
+      "Enter your risk_tolerance"
+  in
   Matchday_handeling.output_bets_and_information
     example
     ~bankroll:(float_of_string bankroll)
-    ~unwanted_teams:[ unwanted_team1; unwanted_team2 ];
+    ~unwanted_teams:[ unwanted_team1; unwanted_team2 ]
+    ~risk_tolerance:(float_of_string risk_tolerance);
+  return ()
+;;
+
+let run_matchday () =
+  let match_data = Interpreting_matchdata.parse_matchday_facts () in
+  Matchday_handeling.output_bets_and_information
+    match_data
+    ~bankroll:1000.
+    ~unwanted_teams:[]
+    ~risk_tolerance:10.0;
   return ()
 ;;

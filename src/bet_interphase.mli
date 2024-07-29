@@ -34,6 +34,7 @@ module Bet_properties : sig
     ; variance : float
     ; variance_cost : float
     ; risk : float
+    ; odds : float
     }
   [@@deriving sexp, equal]
 
@@ -50,3 +51,9 @@ val create_bet_properties
   -> Bets.t
   -> Game_distribution.t
   -> Bet_properties.t
+
+val decide_bet_amount
+  :  bankroll:float
+  -> risk_tolerance:float
+  -> match_bet:Bet_properties.t
+  -> float option
