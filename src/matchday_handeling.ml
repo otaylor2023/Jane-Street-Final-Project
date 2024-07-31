@@ -91,6 +91,34 @@ let output_bets_and_information
     | None -> ())
 ;;
 
+let output_bets_and_information_as_string
+  (t : t)
+  ~bankroll
+  ~unwanted_teams
+  ~risk_tolerance
+  =
+  let match_bets =
+    filter_unwilling_matches ~unwanted_teams t |> choose_match_bets
+  in
+  List.filter_map match_bets ~f:(fun inp ->
+    let ((home, away), (_, predicted)), (_, odds) = inp in
+    let distribution = Bet_interphase.implied_game_distribution predicted in
+    let match_bet =
+      Bet_interphase.create_bet_properties bankroll odds distribution
+    in
+    let bet_amount =
+      Bet_interphase.decide_bet_amount ~bankroll ~risk_tolerance ~match_bet
+    in
+    match bet_amount with
+    | Some bet ->
+        Some 
+           ([%string
+           "H: %{home} vs A: %{away} -> Suggested Bet: \
+            %{odds#Bet_interphase.Bets}"],Printf.sprintf "EV:%.2f, Variance:%.2f, Risk:%.2f -> Bet Amount:%.2f" match_bet.expected_value match_bet.variance match_bet.risk bet)
+
+    | None -> None)
+;;
+
 (* let create_matchday_data () = 
   
 ;; *)

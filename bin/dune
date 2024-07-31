@@ -1,5 +1,5 @@
 (executables
- (names laligabet matchday_example matchday_test)
+ (names laligabet matchday_example matchday_test render_game)
  (preprocess
   (pps ppx_jane))
  (libraries

@@ -10,7 +10,8 @@
   lambdasoup
   uri
   core_unix.command_unix
-  csv)
+  csv
+  graphics)
  (preprocess
   (pps ppx_jane))
  (inline_tests
