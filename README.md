@@ -24,6 +24,7 @@ For match and updated league statistics, we scraped from Flash Score which keeps
 
 We created a OCaml Gui that displays the upcoming matches, season, date, and matchday. It takes in the users input of Favorite Team, Risk Tolerance, and Bankroll. We decided that it is not a good idea to bet for/against your favorite team, so it removes the match with your team from consideration. We used the risk tolerance to decide which games to suggest by applying a risk score to every bet, and only showing bets where the risk is <= the bet's risk. 
 
+!!!
 
 
 =======
