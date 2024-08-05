@@ -26,3 +26,5 @@ We created a OCaml Gui that displays the upcoming matches, season, date, and mat
 
 
 
+=======
+We target our betting to the Spain First Division Football League -> La Liga. Our approach was to predict the closing odds and use it as the fair value. Using the closing odds, we could decide to buy at the current odds by calculating its expected value, variance, and risk. The approach was decided upon under the consideration that sports books are increadibly accurate at predicting the lines and probabilities, so instead of competiting against their models, we used the provided odds to make decisions. 
