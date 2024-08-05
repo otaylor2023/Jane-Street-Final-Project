@@ -31,12 +31,12 @@ let init_exn () =
   if !only_one
   then failwith "Can only call init_exn once"
   else only_one := true;
-  Creating_week_stats.create_stats ();
+  (* Creating_week_stats.create_stats (); *)
   Graphics.open_graph
-    (Printf.sprintf
-       " %dx%d"
-       (play_area_height + header_height)
-       play_area_width);
+    (* (Printf.sprintf " %dx%d" (play_area_height + header_height)
+       play_area_width); *)
+    "";
+  Graphics.resize_window (play_area_height + header_height) play_area_width;
   Interface.init ()
 ;;
 
@@ -72,10 +72,10 @@ let draw_header _date _season _match_day =
 
 let draw_week_table (week_matches : Matchday_handeling.t) =
   List.iteri week_matches ~f:(fun idx ((home, away), _, _) ->
-    let x = 40 + (idx % 2 * 220) in
+    let x = 20 + (idx % 2 * 230) in
     let y = 650 - (idx / 2 * 40) in
-    Graphics.draw_rect x y 220 40;
-    Graphics.moveto (x + 5) (y + 20);
+    Graphics.draw_rect x y 230 40;
+    Graphics.moveto (x + 5) (y + 10);
     Graphics.set_text_size 1;
     Graphics.draw_string (Printf.sprintf "H: %s vs A: %s" home away))
 ;;
@@ -165,7 +165,7 @@ let draw_bets_table bets =
   in
   List.iteri bets ~f:(fun idx str ->
     let o1, o2 = str in
-    let x = 40 in
+    let x = 30 in
     let y = 230 - (idx * 45) in
     Graphics.draw_rect x y 440 45;
     Graphics.moveto (x + 5) (y + 20);

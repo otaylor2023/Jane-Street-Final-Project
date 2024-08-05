@@ -1,0 +1,6 @@
+echo "pulling stats"
+dune exec bin/create_stats.exe
+echo "computing weights"
+python3 src/model_connection.py
+echo "running_gui"
+dune exec bin/render_game.exe

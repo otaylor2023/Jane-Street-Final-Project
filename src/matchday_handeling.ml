@@ -42,11 +42,11 @@ let filter_unwilling_matches ~unwanted_teams (t : t) : t =
 let choose_match_bets (t : t) =
   List.filter_map t ~f:(fun inp ->
     let _, (real, pred), books = inp in
-    let home_diff = real.home -. pred.home in
-    let tie_diff = real.tie -. pred.tie in
-    let away_diff = real.away -. pred.away in
+    let home_diff = (real.home -. pred.home) /. real.home in
+    let tie_diff = (real.tie -. pred.tie)  /. real.tie in
+    let away_diff = (real.away -. pred.away) /. real.away in
     let best_val = Float.max (Float.max home_diff tie_diff) away_diff in
-    if Float.( > ) best_val 0.2
+    if Float.( > ) best_val 0.025
     then
       if Float.( = ) home_diff best_val
       then
