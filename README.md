@@ -22,10 +22,9 @@ For match and updated league statistics, we scraped from Flash Score which keeps
 
 # Output
 
-We created a OCaml Gui that displays the upcoming matches, season, date, and matchday. It takes in the users input of Favorite Team, Risk Tolerance, and Bankroll. We decided that it is not a good idea to bet for/against your favorite team, so it removes the match with your team from consideration. We used the risk tolerance to decide which games to suggest by applying a risk score to every bet, and only showing bets where the risk is <= the bet's risk. 
-
-!!!
+We created a OCaml Gui that displays the upcoming matches, season, date, and matchday. It takes in the users input of Favorite Team, Risk Tolerance, and Bankroll. We decided that it is not a good idea to bet for/against your favorite team, so it removes the match with your team from consideration. We used the risk tolerance to decide which games to suggest by applying a risk score to every bet, and only showing bets where the risk is <= the bet's risk. We used the bankroll to decide the amount to bet. We decided what percentage of our bankroll we should bet based on it's expected value and risk and multiply it by the bankroll to ouptut the bet amount.
 
 
-=======
-We target our betting to the Spain First Division Football League -> La Liga. Our approach was to predict the closing odds and use it as the fair value. Using the closing odds, we could decide to buy at the current odds by calculating its expected value, variance, and risk. The approach was decided upon under the consideration that sports books are increadibly accurate at predicting the lines and probabilities, so instead of competiting against their models, we used the provided odds to make decisions. 
+# Warning
+
+The goal of this project was to learn and develop skill in ML forcasting, data-analytics, web-scraping, and much more through an enjoyable practical project. This is still only a tool, and there are never garuntees in gambling. 
