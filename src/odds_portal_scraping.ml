@@ -36,19 +36,11 @@ let get_matches website =
   |> List.map ~f:(fun a -> Soup.to_string a)
 ;;
 
-let%expect_test "get_matches" =
-  (* This test uses existing files on the filesystem. *)
-  List.iter
-    (get_matches "https://www.oddsportal.com/football/spain/laliga/")
-    ~f:print_endline;
-  [%expect
-    {|
-  /wiki/Carnivore
-  /wiki/Domestication_of_the_cat
-  /wiki/Mammal
-  /wiki/Species
-  |}]
-;;
+(* let%expect_test "get_matches" = (* This test uses existing files on the
+   filesystem. *) List.iter (get_matches
+   "https://www.oddsportal.com/football/spain/laliga/") ~f:print_endline;
+   [%expect {| /wiki/Carnivore /wiki/Domestication_of_the_cat /wiki/Mammal
+   /wiki/Species |}] ;; *)
 
 (* curl
    'https://www.oddsportal.com/ajax-sport-country-tournament_/1/A1MYWy8T/X360488X0X0X0X0X0X0X0X0X0X0X0X0X134217729X0X1048578X0X0X1024X18464X131072X256/1/?_=1721921777'

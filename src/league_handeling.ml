@@ -19,6 +19,7 @@ module Team = struct
     ; away_ties : int
     ; away_loss : int
     }
+  [@@deriving sexp]
 
   let initialize_team =
     { home_wins = 0
@@ -41,7 +42,7 @@ module Team = struct
 end
 
 module League = struct
-  type t = Team.t String.Table.t
+  type t = Team.t String.Table.t [@@deriving sexp]
 
   let of_teams team_mapping : t =
     let team_mapping =
@@ -49,6 +50,37 @@ module League = struct
         team_name, Team.initialize_team)
     in
     Hashtbl.of_alist_exn (module String) team_mapping
+  ;;
+
+  let assign_home_stats (t : t) team_name stats =
+    let h_w = List.nth_exn stats 1 in
+    let h_d = List.nth_exn stats 2 in
+    let h_l = List.nth_exn stats 3 in
+    let team_stats = Hashtbl.find_exn t team_name in
+    Hashtbl.set
+      t
+      ~key:team_name
+      ~data:
+        { team_stats with home_wins = h_w; home_ties = h_d; home_loss = h_l }
+  ;;
+
+  let assign_away_stats (t : t) team_name stats =
+    let a_w = List.nth_exn stats 1 in
+    let a_d = List.nth_exn stats 2 in
+    let a_l = List.nth_exn stats 3 in
+    let team_stats = Hashtbl.find_exn t team_name in
+    Hashtbl.set
+      t
+      ~key:team_name
+      ~data:
+        { team_stats with away_wins = a_w; away_ties = a_d; away_loss = a_l }
+  ;;
+
+  let assign_stats t home_stats away_stats =
+    List.iter home_stats ~f:(fun (team, stats) ->
+      assign_home_stats t team stats);
+    List.iter away_stats ~f:(fun (team, stats) ->
+      assign_away_stats t team stats)
   ;;
 
   let get_team_record (t : t) is_home team_name =

@@ -1,41 +1,34 @@
 open! Core
 open Async
 
-let example =
-  [ ( ("Grenada CF", "Dep. La Coruna")
-    , ( { Bet_interphase.Game_odds.home = 2.14; tie = 3.33; away = 3.95 }
-      , { Bet_interphase.Game_odds.home = 2.14; tie = 3.33; away = 3.95 } ) )
-  ; ( ("Sevilla", "Valencia")
-    , ( { Bet_interphase.Game_odds.home = 2.16; tie = 3.55; away = 3.63 }
-      , { Bet_interphase.Game_odds.home = 2.29; tie = 3.46; away = 3.40 } ) )
-  ; ( ("Almeria", "Espanyol")
-    , ( { Bet_interphase.Game_odds.home = 2.56; tie = 3.29; away = 3.07 }
-      , { Bet_interphase.Game_odds.home = 3.19; tie = 3.26; away = 2.50 } ) )
-  ; ( ("Malaga", "Ath Bilbao")
-    , ( { Bet_interphase.Game_odds.home = 3.02; tie = 3.40; away = 2.53 }
-      , { Bet_interphase.Game_odds.home = 3.14; tie = 3.23; away = 2.56 } ) )
-  ; ( ("Celta Vigo", "Getafe")
-    , ( { Bet_interphase.Game_odds.home = 2.01; tie = 3.53; away = 4.18 }
-      , { Bet_interphase.Game_odds.home = 1.68; tie = 3.88; away = 5.90 } ) )
-  ; ( ("Levante", "Sociedad")
-    , ( { Bet_interphase.Game_odds.home = 3.34; tie = 3.32; away = 2.38 }
-      , { Bet_interphase.Game_odds.home = 5.14; tie = 3.46; away = 1.86 } ) )
-  ; ( ("Eibar", "Real Sociedad")
-    , ( { Bet_interphase.Game_odds.home = 3.53; tie = 3.44; away = 2.24 }
-      , { Bet_interphase.Game_odds.home = 3.08; tie = 3.16; away = 2.65 } ) )
-  ; ( ("Barcelona", "Elche")
-    , ( { Bet_interphase.Game_odds.home = 1.14; tie = 10.32; away = 23.12 }
-      , { Bet_interphase.Game_odds.home = 1.11; tie = 12.80; away = 24.00 }
-      ) )
-  ; ( ("Rayo Vallecano", "Atl. Madrid")
-    , ( { Bet_interphase.Game_odds.home = 7.05; tie = 4.41; away = 1.53 }
-      , { Bet_interphase.Game_odds.home = 5.66; tie = 3.61; away = 1.76 } ) )
-  ; ( ("Real Madrid", "Cordoba")
-    , ( { Bet_interphase.Game_odds.home = 1.10; tie = 13.20; away = 28.50 }
-      , { Bet_interphase.Game_odds.home = 1.06; tie = 18.01; away = 39.31 }
-      ) )
-  ]
-;;
+(* let example = [ ( ("Grenada CF", "Dep. La Coruna") , ( {
+   Bet_interphase.Game_odds.home = 2.14; tie = 3.33; away = 3.95 } , {
+   Bet_interphase.Game_odds.home = 2.14; tie = 3.33; away = 3.95 } ) ) ; (
+   ("Sevilla", "Valencia") , ( { Bet_interphase.Game_odds.home = 2.16; tie =
+   3.55; away = 3.63 } , { Bet_interphase.Game_odds.home = 2.29; tie = 3.46;
+   away = 3.40 } ) ) ; ( ("Almeria", "Espanyol") , ( {
+   Bet_interphase.Game_odds.home = 2.56; tie = 3.29; away = 3.07 } , {
+   Bet_interphase.Game_odds.home = 3.19; tie = 3.26; away = 2.50 } ) ) ; (
+   ("Malaga", "Ath Bilbao") , ( { Bet_interphase.Game_odds.home = 3.02; tie =
+   3.40; away = 2.53 } , { Bet_interphase.Game_odds.home = 3.14; tie = 3.23;
+   away = 2.56 } ) ) ; ( ("Celta Vigo", "Getafe") , ( {
+   Bet_interphase.Game_odds.home = 2.01; tie = 3.53; away = 4.18 } , {
+   Bet_interphase.Game_odds.home = 1.68; tie = 3.88; away = 5.90 } ) ) ; (
+   ("Levante", "Sociedad") , ( { Bet_interphase.Game_odds.home = 3.34; tie =
+   3.32; away = 2.38 } , { Bet_interphase.Game_odds.home = 5.14; tie = 3.46;
+   away = 1.86 } ) ) ; ( ("Eibar", "Real Sociedad") , ( {
+   Bet_interphase.Game_odds.home = 3.53; tie = 3.44; away = 2.24 } , {
+   Bet_interphase.Game_odds.home = 3.08; tie = 3.16; away = 2.65 } ) ) ; (
+   ("Barcelona", "Elche") , ( { Bet_interphase.Game_odds.home = 1.14; tie =
+   10.32; away = 23.12 } , { Bet_interphase.Game_odds.home = 1.11; tie =
+   12.80; away = 24.00 } ) ) ; ( ("Rayo Vallecano", "Atl. Madrid") , ( {
+   Bet_interphase.Game_odds.home = 7.05; tie = 4.41; away = 1.53 } , {
+   Bet_interphase.Game_odds.home = 5.66; tie = 3.61; away = 1.76 } ) ) ; (
+   ("Real Madrid", "Cordoba") , ( { Bet_interphase.Game_odds.home = 1.10; tie
+   = 13.20; away = 28.50 } , { Bet_interphase.Game_odds.home = 1.06; tie =
+   18.01; away = 39.31 } ) ) ] ;; *)
+
+let example = Interpreting_matchdata.parse_matchday_facts ()
 
 let run () =
   let%bind home_odds =
@@ -84,9 +77,9 @@ let run () =
     Bet_interphase.implied_game_distribution predicted_odds
   in
   let all_bets =
-    [ Bet_interphase.Bets.Home { odds = game_odds.home }
-    ; Bet_interphase.Bets.Tie { odds = game_odds.tie }
-    ; Bet_interphase.Bets.Away { odds = game_odds.away }
+    [ Bet_interphase.Bets.Home { odds = game_odds.home; book = "TEST" }
+    ; Bet_interphase.Bets.Tie { odds = game_odds.tie; book = "TEST" }
+    ; Bet_interphase.Bets.Away { odds = game_odds.away; book = "TEST" }
     ]
   in
   List.iter all_bets ~f:(fun bet ->

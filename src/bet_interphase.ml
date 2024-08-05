@@ -9,6 +9,15 @@ module Game_odds = struct
   [@@deriving sexp, equal]
 end
 
+module Game_odds_books = struct
+  type t =
+    { home_book : string
+    ; tie_book : string
+    ; away_book : string
+    }
+  [@@deriving sexp, equal]
+end
+
 module Game_distribution = struct
   type t =
     { home : float
@@ -20,12 +29,26 @@ end
 
 module Bets = struct
   type t =
-    | Home of { odds : float }
-    | Tie of { odds : float }
-    | Away of { odds : float }
+    | Home of
+        { odds : float
+        ; book : string
+        }
+    | Tie of
+        { odds : float
+        ; book : string
+        }
+    | Away of
+        { odds : float
+        ; book : string
+        }
   [@@deriving sexp, equal]
 
-  let to_string t = sexp_of_t t |> Sexp.to_string
+  let to_string t =
+    match t with
+    | Home { odds; book } -> Printf.sprintf "%s, Home, %.2f" book odds
+    | Tie { odds; book } -> Printf.sprintf "%s, Tie, %.2f" book odds
+    | Away { odds; book } -> Printf.sprintf "%s, Away, %.2f" book odds
+  ;;
 end
 
 module Bet_properties = struct
@@ -35,6 +58,7 @@ module Bet_properties = struct
     ; variance_cost : float
     ; risk : float
     ; odds : float
+    ; book : string
     }
   [@@deriving sexp, equal]
 
@@ -44,7 +68,7 @@ end
 let convert_to_decimal (american_odds : int) =
   if american_odds > 0
   then Float.( / ) (Float.of_int american_odds) 100. +. 1.
-  else Float.( / ) 100. (Float.of_int american_odds) +. 1.
+  else Float.( / ) 100. (0. -. Float.of_int american_odds) +. 1.
 ;;
 
 let create_game_odds ~home ~tie ~away : Game_odds.t =
@@ -58,9 +82,14 @@ let implied_odds (odd : float) = 1. /. odd
 
 let get_odds (bet_type : Bets.t) =
   match bet_type with
-  | Home { odds } -> odds
-  | Away { odds } -> odds
-  | Tie { odds } -> odds
+  | Home { odds; _ } -> odds
+  | Away { odds; _ } -> odds
+  | Tie { odds; _ } -> odds
+;;
+
+let get_book (bet_type : Bets.t) =
+  match bet_type with
+  | Home { book; _ } | Away { book; _ } | Tie { book; _ } -> book
 ;;
 
 let get_probability (bet_type : Bets.t) (game_d : Game_distribution.t) =
@@ -80,7 +109,7 @@ let implied_game_distribution (game : Game_odds.t) : Game_distribution.t =
 let bet_expected_value (bet_type : Bets.t) (game_d : Game_distribution.t) =
   let p = get_probability bet_type game_d in
   match bet_type with
-  | Home { odds } | Tie { odds } | Away { odds } ->
+  | Home { odds; _ } | Tie { odds; _ } | Away { odds; _ } ->
     (p *. (odds -. 1.)) +. (-1. *. (1. -. p))
 ;;
 
@@ -88,7 +117,7 @@ let bet_variance (bet_type : Bets.t) (game_d : Game_distribution.t) =
   let ev = bet_expected_value bet_type game_d in
   let p = get_probability bet_type game_d in
   match bet_type with
-  | Home { odds } | Tie { odds } | Away { odds } ->
+  | Home { odds; _ } | Tie { odds; _ } | Away { odds; _ } ->
     (Float.( ** ) (odds -. 1. -. ev) 2.0 *. p)
     +. (Float.( ** ) (-1. -. ev) 2.0 *. (1. -. p))
 ;;
@@ -100,7 +129,7 @@ let swap_equivalent
   =
   let p = get_probability bet_type game_d in
   match bet_type with
-  | Home { odds } | Tie { odds } | Away { odds } ->
+  | Home { odds; _ } | Tie { odds; _ } | Away { odds; _ } ->
     let w = (1. -. odds) /. bankroll in
     (Float.( ** ) (1. +. w) p -. 1.) /. (p *. w)
 ;;
@@ -120,9 +149,10 @@ let bet_risk_score (bet_type : Bets.t) (game_d : Game_distribution.t) =
   let variance = bet_variance bet_type game_d in
   let ev = bet_expected_value bet_type game_d in
   let odds = get_odds bet_type in
-  Float.sqrt
-    (Float.( / ) (variance *. 15.) (Float.( ** ) (1. +. ev) 5.) *. odds)
-  -. 1.
+  (Float.sqrt
+     (Float.( / ) (variance *. 5.) (Float.( ** ) (1. +. ev) 6.) *. odds)
+   -. 1.)
+  /. 1.5
 ;;
 
 let create_bet_properties
@@ -136,11 +166,12 @@ let create_bet_properties
   ; variance_cost = cost_of_variance ~bankroll bet_type game_d
   ; risk = bet_risk_score bet_type game_d
   ; odds = get_odds bet_type
+  ; book = get_book bet_type
   }
 ;;
 
 let willing_to_bet risk_tolerance (match_bet : Bet_properties.t) =
-  Float.( > ) (risk_tolerance *. 1.5) match_bet.risk
+  Float.( > ) risk_tolerance match_bet.risk
 ;;
 
 let decide_bet_amount

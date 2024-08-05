@@ -1,41 +1,5 @@
 open! Core
 
-let example =
-  [ ( ("Grenada CF", "Dep. La Coruna")
-    , ( { Bet_interphase.Game_odds.home = 2.14; tie = 3.33; away = 3.95 }
-      , { Bet_interphase.Game_odds.home = 2.14; tie = 3.33; away = 3.95 } ) )
-  ; ( ("Sevilla", "Valencia")
-    , ( { Bet_interphase.Game_odds.home = 2.16; tie = 3.55; away = 3.63 }
-      , { Bet_interphase.Game_odds.home = 2.29; tie = 3.46; away = 3.40 } ) )
-  ; ( ("Almeria", "Espanyol")
-    , ( { Bet_interphase.Game_odds.home = 2.56; tie = 3.29; away = 3.07 }
-      , { Bet_interphase.Game_odds.home = 3.19; tie = 3.26; away = 2.50 } ) )
-  ; ( ("Malaga", "Ath Bilbao")
-    , ( { Bet_interphase.Game_odds.home = 3.02; tie = 3.40; away = 2.53 }
-      , { Bet_interphase.Game_odds.home = 3.14; tie = 3.23; away = 2.56 } ) )
-  ; ( ("Celta Vigo", "Getafe")
-    , ( { Bet_interphase.Game_odds.home = 2.01; tie = 3.53; away = 4.18 }
-      , { Bet_interphase.Game_odds.home = 1.68; tie = 3.88; away = 5.90 } ) )
-  ; ( ("Levante", "Sociedad")
-    , ( { Bet_interphase.Game_odds.home = 3.34; tie = 3.32; away = 2.38 }
-      , { Bet_interphase.Game_odds.home = 5.14; tie = 3.46; away = 1.86 } ) )
-  ; ( ("Eibar", "Real Sociedad")
-    , ( { Bet_interphase.Game_odds.home = 3.53; tie = 3.44; away = 2.24 }
-      , { Bet_interphase.Game_odds.home = 3.08; tie = 3.16; away = 2.65 } ) )
-  ; ( ("Barcelona", "Elche")
-    , ( { Bet_interphase.Game_odds.home = 1.14; tie = 10.32; away = 23.12 }
-      , { Bet_interphase.Game_odds.home = 1.11; tie = 12.80; away = 24.00 }
-      ) )
-  ; ( ("Rayo Vallecano", "Atl. Madrid")
-    , ( { Bet_interphase.Game_odds.home = 7.05; tie = 4.41; away = 1.53 }
-      , { Bet_interphase.Game_odds.home = 5.66; tie = 3.61; away = 1.76 } ) )
-  ; ( ("Real Madrid", "Cordoba")
-    , ( { Bet_interphase.Game_odds.home = 1.10; tie = 13.20; away = 28.50 }
-      , { Bet_interphase.Game_odds.home = 1.06; tie = 18.01; away = 39.31 }
-      ) )
-  ]
-;;
-
 module Colors = struct
   let black = Graphics.rgb 000 000 000
   let white = Graphics.rgb 255 255 255
@@ -67,6 +31,7 @@ let init_exn () =
   if !only_one
   then failwith "Can only call init_exn once"
   else only_one := true;
+  Creating_week_stats.create_stats ();
   Graphics.open_graph
     (Printf.sprintf
        " %dx%d"
@@ -80,13 +45,25 @@ let draw_header _date _season _match_day =
   let header_color = Colors.blue in
   Graphics.set_color header_color;
   Graphics.fill_rect 0 play_area_height play_area_width header_height;
-  let date = "02/22/24" in
-  let season = "23/24" in
   let match_day = "1" in
+  (* let full_date = Date.today ~zone:Time_zone.utc in *)
+  let cur_time =
+    Time_ns.now () |> Time_ns.to_date ~zone:Time_ns_unix.Zone.utc
+  in
+  let american_year = Date.to_string_american cur_time in
+  let month = Date.month cur_time |> Month.to_int in
+  let season = Int.( % ) (Date.year cur_time) 100 in
+  let season =
+    if month < 6
+    then
+      String.concat [ Int.to_string (season - 1); "/"; Int.to_string season ]
+    else
+      String.concat [ Int.to_string season; "/"; Int.to_string (season + 1) ]
+  in
   Graphics.set_color Colors.black;
   Graphics.set_text_size 150;
   Graphics.moveto 20 (play_area_height + 25);
-  Graphics.draw_string (Printf.sprintf "Date: %s" date);
+  Graphics.draw_string (Printf.sprintf "Date: %s" american_year);
   Graphics.moveto 200 (play_area_height + 25);
   Graphics.draw_string (Printf.sprintf "Season: %s" season);
   Graphics.moveto 380 (play_area_height + 25);
@@ -94,7 +71,7 @@ let draw_header _date _season _match_day =
 ;;
 
 let draw_week_table (week_matches : Matchday_handeling.t) =
-  List.iteri week_matches ~f:(fun idx ((home, away), _) ->
+  List.iteri week_matches ~f:(fun idx ((home, away), _, _) ->
     let x = 40 + (idx % 2 * 220) in
     let y = 650 - (idx / 2 * 40) in
     Graphics.draw_rect x y 220 40;
@@ -183,6 +160,9 @@ let get_bets (week_games : Matchday_handeling.t) bankroll fav_team risk =
 ;;
 
 let draw_bets_table bets =
+  let bets =
+    if List.length bets > 5 then List.sub bets ~pos:0 ~len:5 else bets
+  in
   List.iteri bets ~f:(fun idx str ->
     let o1, o2 = str in
     let x = 40 in
@@ -233,10 +213,11 @@ let render interface =
   draw_play_area ();
   display_fav_team interface;
   display_bankroll interface;
-  draw_bets example interface;
+  let match_data = Interpreting_matchdata.parse_matchday_facts () in
+  draw_bets match_data interface;
   display_submit ();
   display_risk interface;
-  draw_week_games ~game_day:1 example;
+  draw_week_games ~game_day:1 match_data;
   Graphics.display_mode true;
   Graphics.synchronize ()
 ;;
