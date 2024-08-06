@@ -9,6 +9,7 @@ service = webdriver.FirefoxService(executable_path='/snap/firefox/current/usr/li
 options = webdriver.FirefoxOptions()
 options.add_argument('--headless')
 options.binary_location = '/snap/firefox/current/usr/lib/firefox/firefox'
+
 with webdriver.Firefox(service=service, options=options) as driver:
 
     driver.get("https://www.oddschecker.com/us/soccer/spain/la-liga-primera")

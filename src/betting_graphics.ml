@@ -5,6 +5,7 @@ module Colors = struct
   let white = Graphics.rgb 255 255 255
   let green = Graphics.rgb 000 255 000
   let blue = Graphics.rgb 000 000 255
+  let light_blue = Graphics.rgb 051 153 255
   let head_color = Graphics.rgb 100 100 125
   let red = Graphics.rgb 255 000 000
   let background = Graphics.rgb 250 213 213
@@ -40,12 +41,11 @@ let init_exn () =
   Interface.init ()
 ;;
 
-let draw_header _date _season _match_day =
+let draw_header match_day =
   let open Constants in
-  let header_color = Colors.blue in
+  let header_color = Colors.light_blue in
   Graphics.set_color header_color;
   Graphics.fill_rect 0 play_area_height play_area_width header_height;
-  let match_day = "1" in
   (* let full_date = Date.today ~zone:Time_zone.utc in *)
   let cur_time =
     Time_ns.now () |> Time_ns.to_date ~zone:Time_ns_unix.Zone.utc
@@ -84,7 +84,7 @@ let draw_week_games ~game_day (week_matches : Matchday_handeling.t) =
   Graphics.set_color Colors.red;
   Graphics.set_text_size 80;
   Graphics.moveto 50 725;
-  Graphics.draw_string (Printf.sprintf "Week %d Games: " game_day);
+  Graphics.draw_string (Printf.sprintf "Week %s Games: " game_day);
   draw_week_table week_matches
 ;;
 
@@ -132,7 +132,7 @@ let display_risk (interphase : Interface.t) =
   Graphics.set_color Colors.red;
   Graphics.set_text_size 80;
   Graphics.moveto 50 355;
-  Graphics.draw_string (Printf.sprintf "Risk: ");
+  Graphics.draw_string (Printf.sprintf "Risk: (0-9) ");
   Graphics.moveto 155 355;
   Graphics.draw_string (Printf.sprintf "%d" interphase.current_risk)
 ;;
@@ -200,6 +200,9 @@ let draw_play_area () =
   Graphics.fill_rect 0 0 play_area_width play_area_height
 ;;
 
+let match_data = Interpreting_matchdata.parse_matchday_facts ()
+let game_day = Int.to_string (Determine_matchday.get_matchday ())
+
 let render interface =
   (* We want double-buffering. See
      https://v2.ocaml.org/releases/4.03/htmlman/libref/Graphics.html for more
@@ -209,15 +212,14 @@ let render interface =
      [display_mode] to true and then synchronize. This guarantees that there
      won't be flickering! *)
   Graphics.display_mode false;
-  draw_header 1 1 1;
+  draw_header game_day;
   draw_play_area ();
   display_fav_team interface;
   display_bankroll interface;
-  let match_data = Interpreting_matchdata.parse_matchday_facts () in
   draw_bets match_data interface;
   display_submit ();
   display_risk interface;
-  draw_week_games ~game_day:1 match_data;
+  draw_week_games ~game_day match_data;
   Graphics.display_mode true;
   Graphics.synchronize ()
 ;;

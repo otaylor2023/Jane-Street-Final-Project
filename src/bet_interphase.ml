@@ -144,6 +144,12 @@ let cost_of_variance
   ev *. (1. -. s)
 ;;
 
+let _kelly_criterion (bet_type : Bets.t) (game_d : Game_distribution.t) =
+  let b = get_odds bet_type in
+  let p = get_probability bet_type game_d in
+  (p *. b) -. 1.
+;;
+
 (* VERY SUBJECT TO CHANGE NEED TO FIGUERE THIS OUT *)
 let bet_risk_score (bet_type : Bets.t) (game_d : Game_distribution.t) =
   let variance = bet_variance bet_type game_d in
