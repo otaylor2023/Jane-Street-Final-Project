@@ -27,17 +27,13 @@ end
 let only_one : bool ref = ref false
 
 let init_exn () =
-  let open Constants in
   (* Should raise if called twice *)
   if !only_one
   then failwith "Can only call init_exn once"
   else only_one := true;
   (* Creating_week_stats.create_stats (); *)
-  Graphics.open_graph
-    (* (Printf.sprintf " %dx%d" (play_area_height + header_height)
-       play_area_width); *)
-    "";
-  Graphics.resize_window (play_area_height + header_height) play_area_width;
+  Graphics.open_graph (Printf.sprintf "%dx%d" 400 400);
+  Graphics.resize_window 506 806;
   Interface.init ()
 ;;
 
@@ -83,7 +79,7 @@ let draw_week_table (week_matches : Matchday_handeling.t) =
 let draw_week_games ~game_day (week_matches : Matchday_handeling.t) =
   Graphics.set_color Colors.red;
   Graphics.set_text_size 80;
-  Graphics.moveto 50 725;
+  Graphics.moveto 30 715;
   Graphics.draw_string (Printf.sprintf "Week %s Games: " game_day);
   draw_week_table week_matches
 ;;

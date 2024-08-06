@@ -24,7 +24,7 @@ let handle_keys (interface : Interface.t) =
     | Some key ->
       if interface.bankroll_clicked
       then
-        if Char.is_digit key && interface.current_bankroll < 10001
+        if Char.is_digit key && interface.current_bankroll < 100000000000001
         then
           interface.current_bankroll
           <- Int.of_string
