@@ -1,6 +1,3 @@
----
-title: La Liga Sports Forecasting 
----
 # La Liga Sports Betting & Forecasting
 
 In this project, we implemented forcasting techniques, OCaml Graphics, and scraping techniques to create a tool for sportsbetting on Laliga matches.
