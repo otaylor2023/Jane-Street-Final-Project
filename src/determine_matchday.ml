@@ -4,8 +4,6 @@ let file_name =
   "/home/ubuntu/Jane-Street-Final-Project/data_files/week_data.csv"
 ;;
 
-let information = Csv.load file_name
-
 let get_matchday () =
   let information = Csv.load file_name in
   let min_matches =

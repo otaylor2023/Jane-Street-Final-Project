@@ -76,8 +76,3 @@ let create_stats () =
   Csv.save file (csv_header @ csv_info);
   return ()
 ;;
-
-(* let%expect_test "odds_checker" = (* This test uses existing files on the
-   filesystem. *) create_stats (); [%expect {|
-
-   |}] ;; *)
