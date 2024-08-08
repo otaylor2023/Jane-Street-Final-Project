@@ -6,7 +6,7 @@ In this project, we implemented forcasting techniques, OCaml Graphics, and scrap
 
 Our goal was to create an interactive tool that could help make sports betting profitable. It intakes a users bankroll, risk tolerance, and favorite team, and makes personalized suggestions. 
 
-We target our betting to the Spain First Division Football League -> La Liga. Our approach was to predict the closing odds and use it as the fair value. Using the closing odds, we could decide to buy at the current odds by calculating its expected value, variance, and risk. The approach was decided on under the consideration that sports books are increadibly accurate at predicting the lines and probabilities. Instead of competiting against their models, we opted to use the provided odds to make decisions. 
+We target our betting to the Spain First Division Football League -> La Liga. Our approach was to predict the closing odds and use it as the fair value. Using the closing odds, we could decide to buy at the current odds by calculating its expected value, variance, and risk. The approach was decided on under the consideration that sports books are increadibly accurate at predicting the lines and probabilities. Instead of competiting against their models, we opted to use the provided odds to make decisions. We created and inegrated a machine learning forecasting model with heuristics and trends we discovered through data anlytics on historical data, to make accurate closing odds predictions.
 
 ### Data Analytics And Processing
 

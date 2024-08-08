@@ -6,7 +6,6 @@ import sys
 import csv
 
 def closing_heuristics(op1, opx, op2):
-
     if op2 > opx > op1:
         return (op1*(0.97), opx, op2)
     if opx > op2 > op1:
