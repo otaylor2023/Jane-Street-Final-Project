@@ -5,6 +5,17 @@ import numpy as np
 import sys
 import csv
 
+def closing_heuristics(op1, opx, op2):
+
+    if op2 > opx > op1:
+        return (op1*(0.97), opx, op2)
+    if opx > op2 > op1:
+        return (op1, opx*(0.97), op2)
+    if opx > op1 > op2:
+        return (op1, opx, op2*(0.97))
+    if op1 > opx > op2:
+        return (op1*(0.97), opx, op2)
+    return (op1, opx, op2)
 
 
 filename = "/home/ubuntu/Jane-Street-Final-Project/data_files/week_data.csv"
@@ -32,7 +43,8 @@ predictor_model = load_model('models/model_1.tf')
 match_predictions = []
 for index, row in dataset.iterrows():
     result = predictor_model.predict(np.array([row]), verbose = 0)
-    match_predictions.append([team_idx_to_name[dataset["HomeTeam"][index]],team_idx_to_name[dataset["AwayTeam"][index]], dataset["OP1"][index],dataset["OPX"][index],dataset["OP2"][index], result[0][0], result[0][1],result[0][2], books["book1"][index],books["bookX"][index],books["book2"][index] ])
+    result = closing_heuristics(result[0][0], result[0][1],result[0][2])
+    match_predictions.append([team_idx_to_name[dataset["HomeTeam"][index]],team_idx_to_name[dataset["AwayTeam"][index]], dataset["OP1"][index],dataset["OPX"][index],dataset["OP2"][index], result[0], result[1],result[2], books["book1"][index],books["bookX"][index],books["book2"][index] ])
     # week_predictions.append(dataset["HomeTeam"][index] + result[0])
 # print(week_predictions)
 # predictions = pd.DataFrame(week_predictions)
