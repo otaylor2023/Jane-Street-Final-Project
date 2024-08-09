@@ -1,0 +1,40 @@
+{
+    "manifest_version": 3,
+    "name": "LL DB",
+    "permissions": [
+        "downloads",
+        "tabs"
+    ],
+    "host_permissions": [
+        "https://www.oddsportal.com/football/spain/*",
+        "https://www.oddsportal.com/feed/match-event/*",
+        "https://*/*"
+    ],
+    "version": "1.0",
+    "description": "Add the reading time to Chrome Extension documentation articles",
+    "icons": {
+        "16": "images/icon-16.png",
+        "32": "images/icon-32.png",
+        "48": "images/icon-48.png",
+        "128": "images/icon-128.png"
+    },
+    "background": {
+        "service_worker": "scripts/background.js"
+    },
+    "action": {
+        "default_title": "Download db",
+        "default_icon": "images/icon-32.png"
+    },
+    "content_scripts": [
+        {
+            "js": [
+                "scripts/content.js"
+            ],
+            "matches": [
+                "https://www.oddsportal.com/football/spain/*",
+                "https://www.oddsportal.com/feed/match-event/*"
+            ],
+            "run_at": "document_end"
+        }
+    ]
+}
